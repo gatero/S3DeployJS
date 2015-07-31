@@ -1,0 +1,24 @@
+{
+	"BUCKET_NAME": "test-vo",
+	"AwsConfig": "./AwsConfig.json",
+
+	"styles": {
+		"local" : "./dist/styles/",
+		"remote": "club_premier/newFiles/css/"
+	},
+
+	"scripts" : {
+		"local" : "./dist/scripts/",
+		"remote": "club_premier/js/"
+	},
+
+	"images" : {
+		"local": "./dist/images/",
+		"remote": "club_premier/CPcms/"
+	},
+
+	"bower": {
+		"local" : "./dist/bower_components/",
+		"remote": "club_premier/bower_components"
+	}
+}
