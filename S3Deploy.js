@@ -37,7 +37,6 @@ function showUsage() {
   util.log(typeof(config));
   util.log(util.isArray(config));
   util.log(config.BUCKET_NAME);
-
 }
 // end no params case
 
@@ -62,15 +61,16 @@ function uploadFile(remoteFilename, fileName) {
 
 function runWithParams() {
   console.log('S3 Deployer ... running option is [' + process.argv[2] + ']');
-
-  if (process.argv[2] === 'index') uploadIndex();
-  else if (process.argv[2] === 'list') uploadList();
-  else if (process.argv[2] === 'code') uploadCode();
-  else if (process.argv[2] === 'createBucket') createBucket(BUCKET_NAME);
-  else if (process.argv[2] === 'css') uploadCss();
-  else if (process.argv[2] === 'images') uploadImages();
-  else if (process.argv[2] === 'audio' && process.argv[3]) uploadAudio(process.argv[3]);
-  else console.log('...that option isn\'t recognized');
+  switch(process.argv[2]) {
+    case 'index': uploadIndex(); break;
+    case 'list': uploadList(); break;
+    case 'code': uploadCode(); break;
+    case 'css': uploadCss(); break;
+    case 'images': uploadImages(); break;
+    case 'audio': uploadAudio(process.argv[3]); break;
+    case 'createBucket': createBucket(BUCKET_NAME); break;
+    default: console.log('...that option isn\'t recognized');
+  }
 }
 
 
