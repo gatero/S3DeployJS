@@ -1,9 +1,8 @@
-
-
 var fs = require('fs');
 var util = require('util');
 var aws = require('aws-sdk');
 var config = require('./deployConfig');
+var path = require('path');
 var recursive = require('recursive-readdir');
 
 var BUCKET_NAME = config.BUCKET_NAME;
@@ -23,20 +22,6 @@ else runWithParams();
 function noParamsGiven() {
   showUsage();
   process.exit(-1);
-}
-
-function getFileList(path) {
-  var i, fileInfo, filesFound;
-  var fileList = [];
-
-  filesFound = fs.readdirSync(path);
-  console.log(filesFound);
-  console.log(typeof(filesFound));
-  for (i = 0; i < filesFound.length; i++) {
-    fileInfo = fs.lstatSync(path + filesFound[i]);
-    if (fileInfo.isFile()) fileList.push(filesFound[i]);
-  }
-  return fileList;
 }
 
 function getContentTypeByFile(fileName) {
@@ -104,15 +89,29 @@ function runWithParams() {
 function createBucket(bucketName) {
   s3.createBucket({Bucket: bucketName}, function() {
     console.log('created the bucket[' + bucketName + ']')
-    console.log(arguments);
   });
 }
 
 function uploadSource(type) {
-  var file_list = getFileList(config[type].local);
+  recursive(config[type].local, function (err, files) {
+    files.forEach(function(file){
+      var filePath = path.dirname(file),
+          fileName = path.basename(file);
 
-  file_list.forEach(function(file){
-    uploadFile(config[type].remote + file, config[type].local + file);
+      var firstPath = config[type].local,
+          secondPath = filePath,
+          firstPathDeconstruct = firstPath.split(path.sep),
+          secondPathDeconstruct = secondPath.split(path.sep),
+          remoteFilePath = '';
+
+      secondPathDeconstruct.forEach(function(chunk) {
+        if (firstPathDeconstruct.indexOf(chunk) < 0) {
+          remoteFilePath += (chunk + '/');
+        }
+      })
+      remoteFilePath = config[type].remote + remoteFilePath + fileName;
+      uploadFile(remoteFilePath, filePath + '/' + fileName);
+    });
   });
 };
 
