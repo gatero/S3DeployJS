@@ -1,10 +1,14 @@
 
-var BUCKET_NAME = 's3deploy.example';
 
 var fs = require('fs');
+var util = require('util');
+
+var config = require('./deployConfig');
 
 var aws = require('aws-sdk');
-aws.config.loadFromPath('./AwsConfig.json');
+aws.config.loadFromPath(config.AwsConfig);
+
+var BUCKET_NAME = config.BUCKET_NAME;
 
 var s3 = new aws.S3();
 
@@ -12,12 +16,49 @@ var s3 = new aws.S3();
 if (process.argv.length < 3) noParamsGiven();
 else runWithParams();
 
-
+/**
+* If no params are passed to S3Deploy Object
+* show in console the options aviables
+*/
 function noParamsGiven() {
   showUsage();
   process.exit(-1);
 }
 
+function showUsage() {
+  console.log('Use choosing one of these command line parameters:');
+  console.log('  audio folderName');
+  console.log('  code');
+  console.log('  createBucket');
+  console.log('  css');
+  console.log('  index');
+  console.log('  images');
+  console.log('  list');
+  util.log(typeof(config));
+  util.log(util.isArray(config));
+  util.log(config.BUCKET_NAME);
+
+}
+// end no params case
+
+/**
+* uploadFile
+*/
+function uploadFile(remoteFilename, fileName) {
+  var fileBuffer = fs.readFileSync(fileName);
+  var metaData = getContentTypeByFile(fileName);
+
+  s3.putObject({
+    ACL: 'public-read',
+    Bucket: BUCKET_NAME,
+    Key: remoteFilename,
+    Body: fileBuffer,
+    ContentType: metaData
+  }, function(error, response) {
+    console.log('uploaded file[' + fileName + '] to [' + remoteFilename + '] as [' + metaData + ']');
+    console.log(arguments);
+  });
+}
 
 function runWithParams() {
   console.log('S3 Deployer ... running option is [' + process.argv[2] + ']');
@@ -98,22 +139,6 @@ function getFileList(path) {
 }
 
 
-function uploadFile(remoteFilename, fileName) {
-  var fileBuffer = fs.readFileSync(fileName);
-  var metaData = getContentTypeByFile(fileName);
-
-  s3.putObject({
-    ACL: 'public-read',
-    Bucket: BUCKET_NAME,
-    Key: remoteFilename,
-    Body: fileBuffer,
-    ContentType: metaData
-  }, function(error, response) {
-    console.log('uploaded file[' + fileName + '] to [' + remoteFilename + '] as [' + metaData + ']');
-    console.log(arguments);
-  });
-}
-
 
 function getContentTypeByFile(fileName) {
   var rc = 'application/octet-stream';
@@ -138,13 +163,3 @@ function createBucket(bucketName) {
 }
 
 
-function showUsage() {
-  console.log('Use choosing one of these command line parameters:');
-  console.log('  audio folderName');
-  console.log('  code');
-  console.log('  createBucket');
-  console.log('  css');
-  console.log('  index');
-  console.log('  images');
-  console.log('  list');
-}
