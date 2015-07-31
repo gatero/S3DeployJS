@@ -2,13 +2,13 @@
 
 var fs = require('fs');
 var util = require('util');
-
-var config = require('./deployConfig');
-
 var aws = require('aws-sdk');
-aws.config.loadFromPath(config.AwsConfig);
+var config = require('./deployConfig');
+var recursive = require('recursive-readdir');
 
 var BUCKET_NAME = config.BUCKET_NAME;
+aws.config.loadFromPath(config.AwsConfig);
+
 
 var s3 = new aws.S3();
 
@@ -30,6 +30,8 @@ function getFileList(path) {
   var fileList = [];
 
   filesFound = fs.readdirSync(path);
+  console.log(filesFound);
+  console.log(typeof(filesFound));
   for (i = 0; i < filesFound.length; i++) {
     fileInfo = fs.lstatSync(path + filesFound[i]);
     if (fileInfo.isFile()) fileList.push(filesFound[i]);
