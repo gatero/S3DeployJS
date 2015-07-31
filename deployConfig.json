@@ -3,22 +3,22 @@
 	"AwsConfig": "./AwsConfig.json",
 
 	"styles": {
-		"local" : "./dist/styles/",
+		"local" : "./resources/css/",
 		"remote": "club_premier/newFiles/css/"
 	},
 
 	"scripts" : {
-		"local" : "./dist/scripts/",
+		"local" : "./resources/code/",
 		"remote": "club_premier/js/"
 	},
 
 	"images" : {
-		"local": "./dist/images/",
+		"local": "./resources/audio/",
 		"remote": "club_premier/CPcms/"
 	},
 
 	"bower": {
-		"local" : "./dist/bower_components/",
-		"remote": "club_premier/bower_components"
+		"local" : "./resources/images/",
+		"remote": "club_premier/bower_components/"
 	}
 }
